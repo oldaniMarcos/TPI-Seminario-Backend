@@ -14,9 +14,24 @@ import { ProfitMarginModule } from './profit-margin/profit-margin.module';
 import { CashFlowModule } from './cash-flow/cash-flow.module';
 import { WithdrawalModule } from './withdrawal/withdrawal.module';
 import { InstallmentModule } from './installment/installment.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ClientModule, PetModule, VisitModule, SpeciesModule, BreedModule, LotModule, SupplyTypeModule, SupplyPriceModule, VeterinaryModule, ProfitMarginModule, CashFlowModule, WithdrawalModule, InstallmentModule],
+  imports: [
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true,
+      autoLoadEntities: true,
+    }),
+    ClientModule, PetModule, VisitModule, SpeciesModule, BreedModule, LotModule, SupplyTypeModule, SupplyPriceModule, VeterinaryModule, ProfitMarginModule, CashFlowModule, WithdrawalModule, InstallmentModule],
   controllers: [AppController],
   providers: [AppService],
 })

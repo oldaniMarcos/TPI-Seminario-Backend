@@ -1,26 +1,91 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBreedDto } from './dto/create-breed.dto';
 import { UpdateBreedDto } from './dto/update-breed.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Breed } from './entities/breed.entity';
+import { Repository } from 'typeorm';
+import { Species } from '../species/entities/species.entity';
 
 @Injectable()
 export class BreedService {
-  create(createBreedDto: CreateBreedDto) {
-    return 'This action adds a new breed';
+
+  constructor(
+    @InjectRepository(Breed)
+    private readonly breedRepository: Repository<Breed>,
+    @InjectRepository(Species)
+    private readonly speciesRepository: Repository<Species>,
+  ) { }
+
+  async create(createBreedDto: CreateBreedDto): Promise<Breed> {
+
+    const { description, speciesId } = createBreedDto;
+
+    const species = await this.speciesRepository.findOneBy({ id: speciesId });
+    if (!species) {
+      throw new NotFoundException('Species not found');
+    }
+
+    const breed = this.breedRepository.create({
+      description,
+      species,
+    });
+
+    return this.breedRepository.save(breed);
   }
 
-  findAll() {
-    return `This action returns all breed`;
+  async findAll(): Promise<Breed[]> {
+    return this.breedRepository.find({
+      relations: ['species'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} breed`;
+  async findOne(id: number): Promise<Breed> {
+    const breed = await this.breedRepository.findOne({
+      where: { id },
+      relations: ['species'],
+    });
+
+    if (!breed) {
+      throw new NotFoundException(`Breed with id ${id} not found`);
+    }
+
+    return breed;
   }
 
-  update(id: number, updateBreedDto: UpdateBreedDto) {
-    return `This action updates a #${id} breed`;
+  async update(id: number, updateBreedDto: UpdateBreedDto): Promise<Breed> {
+    const breed = await this.breedRepository.findOne({
+      where: { id },
+      relations: ['species'],
+    });
+
+    if (!breed) {
+      throw new NotFoundException(`Breed with id ${id} not found`);
+    }
+
+    const { description, speciesId } = updateBreedDto;
+
+    // Update primitive fields
+    if (description !== undefined) {
+      breed.description = description;
+    }
+
+    // Update species relation if provided
+    if (speciesId !== undefined) {
+      const species = await this.speciesRepository.findOneBy({ id: speciesId });
+      if (!species) {
+        throw new NotFoundException(`Species with id ${speciesId} not found`);
+      }
+      breed.species = species;
+    }
+
+    return await this.breedRepository.save(breed);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} breed`;
+  async remove(id: number): Promise<void> {
+    const result = await this.breedRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Breed with id ${id} not found`);
+    }
   }
 }
