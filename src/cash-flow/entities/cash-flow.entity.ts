@@ -1,7 +1,8 @@
-import { Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, OneToMany, PrimaryGeneratedColumn, Entity } from "typeorm";
 import { Withdrawal } from "../../withdrawal/entities/withdrawal.entity";
 import { Visit } from "../../visit/entities/visit.entity";
 
+@Entity()
 export class CashFlow {
 
   @PrimaryGeneratedColumn()

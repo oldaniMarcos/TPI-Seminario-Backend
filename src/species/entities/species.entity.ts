@@ -1,6 +1,7 @@
-import { Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, OneToMany, PrimaryGeneratedColumn, Entity } from "typeorm";
 import { Breed } from "../../breed/entities/breed.entity";
 
+@Entity()
 export class Species {
   @PrimaryGeneratedColumn()
   id: number;

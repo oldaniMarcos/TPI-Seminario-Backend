@@ -1,26 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateCashFlowDto } from './dto/create-cash-flow.dto';
 import { UpdateCashFlowDto } from './dto/update-cash-flow.dto';
+import { CashFlow } from './entities/cash-flow.entity';
 
 @Injectable()
 export class CashFlowService {
-  create(createCashFlowDto: CreateCashFlowDto) {
-    return 'This action adds a new cashFlow';
+  constructor(
+    @InjectRepository(CashFlow)
+    private readonly cashFlowRepository: Repository<CashFlow>,
+  ) {}
+
+  async create(createCashFlowDto: CreateCashFlowDto): Promise<CashFlow> {
+    const cashFlow = this.cashFlowRepository.create(createCashFlowDto);
+    return this.cashFlowRepository.save(cashFlow);
   }
 
-  findAll() {
-    return `This action returns all cashFlow`;
+  async findAll(): Promise<CashFlow[]> {
+    return this.cashFlowRepository.find({
+      relations: ['withdrawals', 'visits'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cashFlow`;
+  async findOne(id: number): Promise<CashFlow> {
+    const cashFlow = await this.cashFlowRepository.findOne({
+      where: { id },
+      relations: ['withdrawals', 'visits'],
+    });
+
+    if (!cashFlow) {
+      throw new NotFoundException(`CashFlow with id ${id} not found`);
+    }
+
+    return cashFlow;
   }
 
-  update(id: number, updateCashFlowDto: UpdateCashFlowDto) {
-    return `This action updates a #${id} cashFlow`;
+  async update(id: number, updateCashFlowDto: UpdateCashFlowDto): Promise<CashFlow> {
+    await this.findOne(id);
+    await this.cashFlowRepository.update(id, updateCashFlowDto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cashFlow`;
+  async remove(id: number): Promise<void> {
+    const cashFlow = await this.findOne(id);
+    await this.cashFlowRepository.delete(cashFlow.id);
   }
 }

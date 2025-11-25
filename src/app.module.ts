@@ -16,6 +16,8 @@ import { WithdrawalModule } from './withdrawal/withdrawal.module';
 import { InstallmentModule } from './installment/installment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -31,7 +33,7 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    ClientModule, PetModule, VisitModule, SpeciesModule, BreedModule, LotModule, SupplyTypeModule, SupplyPriceModule, VeterinaryModule, ProfitMarginModule, CashFlowModule, WithdrawalModule, InstallmentModule],
+    ClientModule, PetModule, VisitModule, SpeciesModule, BreedModule, LotModule, SupplyTypeModule, SupplyPriceModule, VeterinaryModule, ProfitMarginModule, CashFlowModule, WithdrawalModule, InstallmentModule, UserModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

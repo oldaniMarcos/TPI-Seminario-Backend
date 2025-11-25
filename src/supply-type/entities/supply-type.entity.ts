@@ -1,7 +1,8 @@
-import { Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, OneToMany, PrimaryGeneratedColumn, Entity } from "typeorm";
 import { SupplyPrice } from "../../supply-price/entities/supply-price.entity";
 import { Lot } from "../../lot/entities/lot.entity";
 
+@Entity()
 export class SupplyType {
   @PrimaryGeneratedColumn()
   id: number;

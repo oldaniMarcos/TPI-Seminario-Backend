@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateProfitMarginDto } from './dto/create-profit-margin.dto';
 import { UpdateProfitMarginDto } from './dto/update-profit-margin.dto';
+import { ProfitMargin } from './entities/profit-margin.entity';
 
 @Injectable()
 export class ProfitMarginService {
-  create(createProfitMarginDto: CreateProfitMarginDto) {
-    return 'This action adds a new profitMargin';
+  constructor(
+    @InjectRepository(ProfitMargin)
+    private readonly profitMarginRepository: Repository<ProfitMargin>,
+  ) {}
+
+  async create(createProfitMarginDto: CreateProfitMarginDto): Promise<ProfitMargin> {
+    const pm = this.profitMarginRepository.create(createProfitMarginDto);
+    return this.profitMarginRepository.save(pm);
   }
 
-  findAll() {
-    return `This action returns all profitMargin`;
+  async findAll(): Promise<ProfitMargin[]> {
+    return this.profitMarginRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profitMargin`;
+  async findOne(id: number): Promise<ProfitMargin> {
+    const pm = await this.profitMarginRepository.findOne({ where: { id } });
+    if (!pm) {
+      throw new NotFoundException(`ProfitMargin with id ${id} not found`);
+    }
+    return pm;
   }
 
-  update(id: number, updateProfitMarginDto: UpdateProfitMarginDto) {
-    return `This action updates a #${id} profitMargin`;
+  async update(id: number, updateProfitMarginDto: UpdateProfitMarginDto): Promise<ProfitMargin> {
+    await this.findOne(id);
+    await this.profitMarginRepository.update(id, updateProfitMarginDto as any);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} profitMargin`;
+  async remove(id: number): Promise<void> {
+    const pm = await this.findOne(id);
+    await this.profitMarginRepository.delete(pm.id);
   }
 }

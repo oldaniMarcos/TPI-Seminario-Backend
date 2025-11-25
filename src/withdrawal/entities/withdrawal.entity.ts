@@ -1,6 +1,7 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, ManyToOne, PrimaryGeneratedColumn, Entity } from "typeorm";
 import { CashFlow } from "../../cash-flow/entities/cash-flow.entity";
 
+@Entity()
 export class Withdrawal {
   @PrimaryGeneratedColumn()
   id: number;

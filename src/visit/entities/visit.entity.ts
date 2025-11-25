@@ -1,10 +1,11 @@
-import { Column, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Entity } from "typeorm";
 import { Pet } from "../../pet/entities/pet.entity";
 import { Veterinary } from "../../veterinary/entities/veterinary.entity";
 import { CashFlow } from "../../cash-flow/entities/cash-flow.entity";
 import { Installment } from "../../installment/entities/installment.entity";
 import { SupplyType } from "../../supply-type/entities/supply-type.entity";
 
+@Entity()
 export class Visit {
   @PrimaryGeneratedColumn()
   id: number;

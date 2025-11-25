@@ -1,26 +1,88 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
+import { Pet } from './entities/pet.entity';
+import { Client } from '../client/entities/client.entity';
+import { Breed } from '../breed/entities/breed.entity';
 
 @Injectable()
 export class PetService {
-  create(createPetDto: CreatePetDto) {
-    return 'This action adds a new pet';
+  constructor(
+    @InjectRepository(Pet)
+    private readonly petRepository: Repository<Pet>,
+    @InjectRepository(Client)
+    private readonly clientRepository: Repository<Client>,
+    @InjectRepository(Breed)
+    private readonly breedRepository: Repository<Breed>,
+  ) {}
+
+  async create(createPetDto: CreatePetDto): Promise<Pet> {
+    const client = await this.clientRepository.findOne({ where: { id: createPetDto.clientId } });
+    if (!client) {
+      throw new NotFoundException(`Client with id ${createPetDto.clientId} not found`);
+    }
+
+    const breed = await this.breedRepository.findOne({ where: { id: createPetDto.breedId } });
+    if (!breed) {
+      throw new NotFoundException(`Breed with id ${createPetDto.breedId} not found`);
+    }
+
+    const pet = this.petRepository.create({
+      name: createPetDto.name,
+      birthDate: createPetDto.birthDate,
+      age: createPetDto.age,
+      state: createPetDto.state,
+      client,
+      breed,
+    });
+
+    return this.petRepository.save(pet);
   }
 
-  findAll() {
-    return `This action returns all pet`;
+  async findAll(): Promise<Pet[]> {
+    return this.petRepository.find({ relations: ['client', 'breed', 'visits'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pet`;
+  async findOne(id: number): Promise<Pet> {
+    const pet = await this.petRepository.findOne({ where: { id }, relations: ['client', 'breed', 'visits'] });
+    if (!pet) {
+      throw new NotFoundException(`Pet with id ${id} not found`);
+    }
+    return pet;
   }
 
-  update(id: number, updatePetDto: UpdatePetDto) {
-    return `This action updates a #${id} pet`;
+  async update(id: number, updatePetDto: UpdatePetDto): Promise<Pet> {
+    const pet = await this.findOne(id);
+
+    if (updatePetDto.clientId) {
+      const client = await this.clientRepository.findOne({ where: { id: updatePetDto.clientId } });
+      if (!client) {
+        throw new NotFoundException(`Client with id ${updatePetDto.clientId} not found`);
+      }
+      pet.client = client;
+    }
+
+    if (updatePetDto.breedId) {
+      const breed = await this.breedRepository.findOne({ where: { id: updatePetDto.breedId } });
+      if (!breed) {
+        throw new NotFoundException(`Breed with id ${updatePetDto.breedId} not found`);
+      }
+      pet.breed = breed;
+    }
+
+    // apply other fields
+    if (updatePetDto.name !== undefined) pet.name = updatePetDto.name;
+    if (updatePetDto.birthDate !== undefined) pet.birthDate = updatePetDto.birthDate;
+    if (updatePetDto.age !== undefined) pet.age = updatePetDto.age;
+    if (updatePetDto.state !== undefined) pet.state = updatePetDto.state;
+
+    return this.petRepository.save(pet);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pet`;
+  async remove(id: number): Promise<void> {
+    const pet = await this.findOne(id);
+    await this.petRepository.delete(pet.id);
   }
 }

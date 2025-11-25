@@ -1,6 +1,7 @@
-import { Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, OneToMany, PrimaryGeneratedColumn, Entity } from "typeorm";
 import { Pet } from "../../pet/entities/pet.entity";
 
+@Entity()
 export class Client {
   @PrimaryGeneratedColumn()
   id: number;

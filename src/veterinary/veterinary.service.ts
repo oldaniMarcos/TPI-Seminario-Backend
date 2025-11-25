@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateVeterinaryDto } from './dto/create-veterinary.dto';
 import { UpdateVeterinaryDto } from './dto/update-veterinary.dto';
+import { Veterinary } from './entities/veterinary.entity';
 
 @Injectable()
 export class VeterinaryService {
-  create(createVeterinaryDto: CreateVeterinaryDto) {
-    return 'This action adds a new veterinary';
+  constructor(
+    @InjectRepository(Veterinary)
+    private readonly veterinaryRepository: Repository<Veterinary>,
+  ) {}
+
+  async create(createVeterinaryDto: CreateVeterinaryDto): Promise<Veterinary> {
+    const v = this.veterinaryRepository.create(createVeterinaryDto);
+    return this.veterinaryRepository.save(v);
   }
 
-  findAll() {
-    return `This action returns all veterinary`;
+  async findAll(): Promise<Veterinary[]> {
+    return this.veterinaryRepository.find({ relations: ['visits'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} veterinary`;
+  async findOne(id: number): Promise<Veterinary> {
+    const v = await this.veterinaryRepository.findOne({ where: { id }, relations: ['visits'] });
+    if (!v) {
+      throw new NotFoundException(`Veterinary with id ${id} not found`);
+    }
+    return v;
   }
 
-  update(id: number, updateVeterinaryDto: UpdateVeterinaryDto) {
-    return `This action updates a #${id} veterinary`;
+  async update(id: number, updateVeterinaryDto: UpdateVeterinaryDto): Promise<Veterinary> {
+    await this.findOne(id);
+    await this.veterinaryRepository.update(id, updateVeterinaryDto as any);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} veterinary`;
+  async remove(id: number): Promise<void> {
+    const v = await this.findOne(id);
+    await this.veterinaryRepository.delete(v.id);
   }
 }
