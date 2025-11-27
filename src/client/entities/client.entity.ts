@@ -6,23 +6,23 @@ export class Client {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', {length: 25})
   docNum: string;
 
-  @Column()
+  @Column('varchar', {length: 3})
   docType: string;
 
-  @Column()
+  @Column('varchar', {length: 50})
   fullName: string;
 
-  @Column()
+  @Column('varchar', {length: 25})
   phone: string;
 
-  @Column()
+  @Column('varchar', {length: 50})
   address: string;
 
-  @Column()
-  state: string;
+  @Column('varchar', {length: 4})
+  state: 'alta' | 'baja';
 
   @OneToMany(() => Pet, (pets) => pets.client)
   pets: Pet[]

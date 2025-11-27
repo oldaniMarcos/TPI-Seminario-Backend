@@ -6,13 +6,13 @@ export class Installment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('date')
   dueDate: string;
 
-  @Column()
+  @Column('float')
   amount: number;
 
-  @Column()
+  @Column('date')
   payDate: string;
 
   @ManyToOne(() => Visit, (visit) => visit.installments)

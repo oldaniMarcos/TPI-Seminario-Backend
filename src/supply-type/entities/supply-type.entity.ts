@@ -7,7 +7,7 @@ export class SupplyType {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', {length: 50})
   description: string;
 
   @OneToMany(() => SupplyPrice, (supplyPrices) => supplyPrices.supplyType)

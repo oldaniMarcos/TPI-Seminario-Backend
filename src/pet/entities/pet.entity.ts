@@ -8,17 +8,17 @@ export class Pet {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', {length: 50})
   name: string;
 
-  @Column()
+  @Column('date')
   birthDate: string;
 
-  @Column()
+  @Column('int')
   age: number;
 
-  @Column()
-  state: string;
+  @Column('varchar', {length: 4})
+  state: 'alta' | 'baja';
 
   @ManyToOne(() => Client, (client) => client.pets)
   client: Client;

@@ -6,19 +6,19 @@ export class Withdrawal {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('datetime')
   dateTime: string;
 
-  @Column()
+  @Column('varchar', {length: 100})
   description: string;
 
-  @Column()
+  @Column('float')
   amount: number;
 
-  @Column()
+  @Column('varchar', {length: 25})
   state: string;
 
-  @Column()
+  @Column('date')
   payDate: string;
 
   @ManyToOne(() => CashFlow, (cashFlow) => cashFlow.withdrawals)

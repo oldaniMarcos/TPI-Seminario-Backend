@@ -10,13 +10,13 @@ export class Visit {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('datetime')
   dateTime: string;
 
-  @Column()
+  @Column('varchar', {length: 255})
   diagnostic: string;
 
-  @Column()
+  @Column('float')
   amount: number;
 
   @ManyToOne(() => Pet, (pet) => pet.visits)

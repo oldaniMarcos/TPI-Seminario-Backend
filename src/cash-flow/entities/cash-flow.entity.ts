@@ -8,19 +8,19 @@ export class CashFlow {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('date')
   closeDate: string;
 
-  @Column()
+  @Column('char')
   closeType: string;
 
-  @Column()
+  @Column('float')
   initialAmount: number;
 
-  @Column()
+  @Column('float')
   inflows: number;
 
-  @Column()
+  @Column('float')
   outflows: number;
 
   @OneToMany(() => Withdrawal, (withdrawals) => withdrawals.cashFlow)

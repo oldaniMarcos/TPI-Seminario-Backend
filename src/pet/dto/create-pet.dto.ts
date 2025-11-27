@@ -15,7 +15,7 @@ export class CreatePetDto {
 
   @IsNotEmpty()
   @IsString()
-  state: string;
+  state: 'alta' | 'baja';
 
   @IsNotEmpty()
   @IsInt()

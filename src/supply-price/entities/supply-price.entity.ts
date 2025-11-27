@@ -6,13 +6,13 @@ export class SupplyPrice {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('date')
   beginDate: string;
 
-  @Column()
+  @Column('varchar', {length: 3})
   currency: string;
 
-  @Column()
+  @Column('float')
   price: number;
 
   @ManyToOne(() => SupplyType, (supplyType) => supplyType.supplyPrices)

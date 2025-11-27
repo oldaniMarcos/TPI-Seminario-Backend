@@ -31,5 +31,5 @@ export class CreateVeterinaryDto {
 
   @IsNotEmpty()
   @IsString()
-  state: string;
+  state: 'alta' | 'baja';
 }

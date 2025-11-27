@@ -6,13 +6,13 @@ export class Lot {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', {length: 50})
   lotNumber: string;
 
-  @Column()
+  @Column('date')
   dueDate: string;
 
-  @Column()
+  @Column('int')
   units: number;
 
   @ManyToOne(() => SupplyType, (supplyType) => supplyType.lots)

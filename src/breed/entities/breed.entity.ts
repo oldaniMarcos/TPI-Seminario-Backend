@@ -7,7 +7,7 @@ export class Breed {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', {length: 50})
   description: string;
 
   @ManyToOne(() => Species, (species) => species.breeds)

@@ -23,5 +23,5 @@ export class CreateClientDto {
 
   @IsNotEmpty()
   @IsString()
-  state: string;
+  state: 'alta' | 'baja';
 }

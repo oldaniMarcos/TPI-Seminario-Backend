@@ -5,9 +5,9 @@ export class ProfitMargin {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('date')
   beginDate: string;
 
-  @Column()
+  @Column('float')
   mult: number;
 }

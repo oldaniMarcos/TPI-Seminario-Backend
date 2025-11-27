@@ -6,29 +6,29 @@ export class Veterinary {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('varchar', {length: 25})
   licenseNumber: string;
   
-  @Column()
+  @Column('varchar', {length: 25})
   docNum: string;
 
-  @Column()
+  @Column('varchar', {length: 3})
   docType: string;
 
-  @Column()
+  @Column('varchar', {length: 50})
   fullName: string;
 
-  @Column()
+  @Column('varchar', {length: 25})
   phone: string;
 
-  @Column()
+  @Column('varchar', {length: 50})
   address: string;
 
-  @Column()
+  @Column('varchar', {length: 100})
   email: string;
 
-  @Column()
-  state: string;
+  @Column('varchar', {length: 4})
+  state: 'alta' | 'baja';
 
   @OneToMany(() => Visit, (visits) => visits.veterinary)
   visits: Visit[];
