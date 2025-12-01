@@ -36,4 +36,8 @@ export class UserService {
 
     return user;
   }
+
+  async findByUser(username: string): Promise<User | undefined> {
+    return this.usersRepository.findOneBy({ username })
+  }
 }

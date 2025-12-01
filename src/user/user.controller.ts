@@ -8,11 +8,13 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Public } from '../public/public.decorator';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.register(createUserDto);
@@ -22,6 +24,7 @@ export class UserController {
     return safeUser;
   }
 
+  @Public()
   @Post('login')
   async login(@Body() body: { username: string; password: string }) {
     const user = await this.userService.validateUser(
@@ -33,6 +36,7 @@ export class UserController {
     return safeUser;
   }
 
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const user = await this.userService['usersRepository'].findOne({

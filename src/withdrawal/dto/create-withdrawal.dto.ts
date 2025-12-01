@@ -17,7 +17,6 @@ export class CreateWithdrawalDto {
   state: string;
 
   @IsString()
-  @IsNotEmpty()
   payDate: string;
 
   @IsNumber()

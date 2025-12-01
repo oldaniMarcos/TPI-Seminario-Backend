@@ -18,7 +18,7 @@ export class Withdrawal {
   @Column('varchar', {length: 25})
   state: string;
 
-  @Column('date')
+  @Column('date', {nullable: true})
   payDate: string;
 
   @ManyToOne(() => CashFlow, (cashFlow) => cashFlow.withdrawals)

@@ -12,7 +12,7 @@ export class Installment {
   @Column('float')
   amount: number;
 
-  @Column('date')
+  @Column('date', {nullable: true})
   payDate: string;
 
   @ManyToOne(() => Visit, (visit) => visit.installments)

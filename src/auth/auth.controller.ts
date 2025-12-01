@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from '../user/dto/login.dto';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { Public } from '../public/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -16,8 +17,9 @@ export class AuthController {
     return this.userService.register(dto);
   }
 
+  @Public()
   @Post('login')
   login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+    return this.authService.authenticate(dto);
   }
 }
