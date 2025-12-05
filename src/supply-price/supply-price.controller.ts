@@ -32,4 +32,9 @@ export class SupplyPriceController {
   remove(@Param('id') id: string): Promise<void> {
     return this.supplyPriceService.remove(+id);
   }
+
+  @Get('types/:supplyTypeId')
+  findByType(@Param('supplyTypeId') supplyTypeId: string): Promise<SupplyPrice[]> {
+    return this.supplyPriceService.findByType(+supplyTypeId);
+  }
 }

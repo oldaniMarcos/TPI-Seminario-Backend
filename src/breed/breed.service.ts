@@ -88,4 +88,10 @@ export class BreedService {
       throw new NotFoundException(`Breed with id ${id} not found`);
     }
   }
+
+  async findBySpecies(speciesId: number) {
+    return this.breedRepository.find({
+      where: { species: { id: speciesId } }
+    });
+  }
 }

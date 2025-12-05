@@ -39,4 +39,9 @@ export class VeterinaryService {
     const v = await this.findOne(id);
     await this.veterinaryRepository.delete(v.id);
   }
+
+  async updateState(id: number, state: 'alta' | 'baja') {
+    await this.veterinaryRepository.update(id, { state });
+    return this.findOne(id)
+  }
 }

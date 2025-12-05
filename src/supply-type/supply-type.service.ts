@@ -18,7 +18,30 @@ export class SupplyTypeService {
   }
 
   async findAll(): Promise<SupplyType[]> {
-    return this.supplyTypeRepository.find({ relations: ['supplyPrices', 'lots'] });
+    const result = await this.supplyTypeRepository
+      .createQueryBuilder('supplyType')
+
+      .loadRelationCountAndMap(
+        'supplyType.lotsCount',
+        'supplyType.lots'     
+      )
+      .addSelect(subQuery => {
+        return subQuery
+          .select('sp.price')
+          .from('supply_price', 'sp')
+          .where('sp.supplyTypeId = supplyType.id')
+          .orderBy('sp.beginDate', 'DESC')
+          .limit(1);
+      }, 'supplyType_currentPrice')
+
+      .getRawAndEntities();
+
+    const supplyTypes = result.entities.map((st, index) => ({
+      ...st,
+      currentPrice: Number(result.raw[index].supplyType_currentPrice)
+    }));
+
+    return supplyTypes;
   }
 
   async findOne(id: number): Promise<SupplyType> {

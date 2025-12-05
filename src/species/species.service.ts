@@ -25,7 +25,13 @@ export class SpeciesService {
   }
 
   async findAll(): Promise<Species[]> {
-    return this.speciesRepository.find();
+    return this.speciesRepository
+      .createQueryBuilder('species')
+      .loadRelationCountAndMap(
+        'species.breedsCount',
+        'species.breeds'
+      )
+      .getMany()
   }
 
   async findOne(id: number): Promise<Species> {

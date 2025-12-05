@@ -75,4 +75,10 @@ export class LotService {
     const lot = await this.findOne(id);
     await this.lotRepository.delete(lot.id);
   }
+
+  async findBySupplyType(supplyTypeId: number) {
+    return this.lotRepository.find({
+      where: { supplyType: { id: supplyTypeId } }
+    });
+  }
 }

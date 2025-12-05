@@ -18,6 +18,11 @@ export class BreedController {
     return this.breedService.findAll();
   }
 
+  @Get('species/:speciesId')
+  findBySpecies(@Param('speciesId') speciesId: string): Promise<Breed[]> {
+    return this.breedService.findBySpecies(+speciesId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Breed> {
     return this.breedService.findOne(+id);

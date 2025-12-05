@@ -3,6 +3,7 @@ import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
+import { UpdateClientStateDto } from './dto/update-client-state.dto';
 
 @Controller('client')
 export class ClientController {
@@ -31,5 +32,13 @@ export class ClientController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
     return this.clientService.remove(+id);
+  }
+
+  @Patch(':id/state')
+  updateState(
+    @Param('id') id: number,
+    @Body() dto: UpdateClientStateDto,
+  ) {
+    return this.clientService.updateState(id, dto.state);
   }
 }

@@ -18,9 +18,13 @@ export class ClientService {
   }
 
   async findAll(): Promise<Client[]> {
-    return this.clientRepository.find({
-      relations: ['pets'],
-    });
+    return this.clientRepository
+    .createQueryBuilder('client')
+    .loadRelationCountAndMap(
+      'client.petsCount',
+      'client.pets'
+    )
+    .getMany()
   }
 
   async findOne(id: number): Promise<Client> {
@@ -46,4 +50,18 @@ export class ClientService {
     const client = await this.findOne(id);
     await this.clientRepository.delete(client.id);
   }
+
+  async updateState(id: number, state: 'alta' | 'baja') {
+    await this.clientRepository.update(id, { state });
+
+    return this.clientRepository
+      .createQueryBuilder('client')
+      .loadRelationCountAndMap(
+        'client.petsCount',
+        'client.pets'
+      )
+      .where('client.id = :id', { id })
+      .getOne();
+  }
+
 }

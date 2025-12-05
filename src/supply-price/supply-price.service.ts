@@ -65,4 +65,10 @@ export class SupplyPriceService {
     const sp = await this.findOne(id);
     await this.supplyPriceRepository.delete(sp.id);
   }
+
+  async findByType(supplyTypeId: number) {
+    return this.supplyPriceRepository.find({
+      where: { supplyType: { id: supplyTypeId } }
+    });
+  }
 }

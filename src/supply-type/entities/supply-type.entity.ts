@@ -16,5 +16,7 @@ export class SupplyType {
   @OneToMany(() => Lot, (lots) => lots.supplyType)
   lots: Lot[];
 
+  currentPrice?: number;
+
   // many to many defined in Visit
 }

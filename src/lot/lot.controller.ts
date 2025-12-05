@@ -32,4 +32,9 @@ export class LotController {
   remove(@Param('id') id: string): Promise<void> {
     return this.lotService.remove(+id);
   }
+
+  @Get('types/:supplyTypeId')
+    findByType(@Param('supplyTypeId') supplyTypeId: string): Promise<Lot[]> {
+      return this.lotService.findBySupplyType(+supplyTypeId);
+    }
 }

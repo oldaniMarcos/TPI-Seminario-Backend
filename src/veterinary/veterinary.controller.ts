@@ -3,6 +3,7 @@ import { VeterinaryService } from './veterinary.service';
 import { CreateVeterinaryDto } from './dto/create-veterinary.dto';
 import { UpdateVeterinaryDto } from './dto/update-veterinary.dto';
 import { Veterinary } from './entities/veterinary.entity';
+import { UpdateVeterinaryStateDto } from './dto/update-veterinary-state.dto';
 
 @Controller('veterinary')
 export class VeterinaryController {
@@ -31,5 +32,13 @@ export class VeterinaryController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
     return this.veterinaryService.remove(+id);
+  }
+
+  @Patch(':id/state')
+  updateState(
+    @Param('id') id: number,
+    @Body() dto: UpdateVeterinaryStateDto,
+  ) {
+    return this.veterinaryService.updateState(id, dto.state);
   }
 }
