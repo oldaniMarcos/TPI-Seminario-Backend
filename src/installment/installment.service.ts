@@ -24,7 +24,11 @@ export class InstallmentService {
       throw new NotFoundException(`Visit with id ${createInstallmentDto.visitId} not found`);
     }
 
-    const installment = this.installmentRepository.create(createInstallmentDto);
+    const installment = this.installmentRepository.create({
+      ...createInstallmentDto,
+      visit,
+    });
+  
     return this.installmentRepository.save(installment);
   }
 
@@ -68,4 +72,19 @@ export class InstallmentService {
     const installment = await this.findOne(id);
     await this.installmentRepository.delete(installment.id);
   }
+
+  async payInstallment(id: number): Promise<Installment> {
+    const installment = await this.installmentRepository.findOne({ where: { id } });
+
+    if (!installment) {
+      throw new NotFoundException(`Installment with id ${id} not found`);
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+
+    installment.payDate = today;
+
+    return this.installmentRepository.save(installment);
+  }
+
 }

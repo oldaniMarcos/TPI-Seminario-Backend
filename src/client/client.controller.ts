@@ -19,6 +19,19 @@ export class ClientController {
     return this.clientService.findAll();
   }
 
+  @Get('/past-due')
+  findAllPastDue(): Promise<any[]> {
+    return this.clientService.findAllPastDue();
+  }
+
+  @Get('doc/:docType/:docNum')
+  findByDoc(
+    @Param('docType') docType: string,
+    @Param('docNum') docNum: string
+  ): Promise<Client> {
+    return this.clientService.findByDoc(docType, docNum);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Client> {
     return this.clientService.findOne(+id);
@@ -40,5 +53,13 @@ export class ClientController {
     @Body() dto: UpdateClientStateDto,
   ) {
     return this.clientService.updateState(id, dto.state);
+  }
+
+  @Patch(':id/state-installment')
+  updateStateInstallment(
+    @Param('id') id: number,
+    @Body() dto: UpdateClientStateDto,
+  ) {
+    return this.clientService.updateStateInstallment(id, dto.state);
   }
 }

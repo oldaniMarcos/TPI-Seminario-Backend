@@ -9,8 +9,8 @@ export class CreateInstallmentDto {
   @IsNumber()
   amount: number;
 
-  @IsString()
-  payDate: string;
+  // @IsString()
+  // payDate: string | "";
 
   @IsNotEmpty()
   @IsInt()

@@ -32,4 +32,9 @@ export class InstallmentController {
   remove(@Param('id') id: string): Promise<void> {
     return this.installmentService.remove(+id);
   }
+
+  @Patch(':id/pay')
+  pay(@Param('id') id: number): Promise<Installment> {
+    return this.installmentService.payInstallment(id);
+  }
 }
