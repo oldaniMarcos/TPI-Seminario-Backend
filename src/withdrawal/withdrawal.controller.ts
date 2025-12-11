@@ -18,6 +18,11 @@ export class WithdrawalController {
     return this.withdrawalService.findAll();
   }
 
+  @Get("/pending")
+  findAllPending(): Promise<Withdrawal[]> {
+    return this.withdrawalService.findAllPending();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Withdrawal> {
     return this.withdrawalService.findOne(+id);

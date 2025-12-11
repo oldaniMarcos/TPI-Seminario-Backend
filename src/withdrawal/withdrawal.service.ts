@@ -21,6 +21,10 @@ export class WithdrawalService {
       throw new NotFoundException(`CashFlow with id ${createWithdrawalDto.cashFlowId} not found`);
     }
 
+    if (createWithdrawalDto.payDate === "") {
+      createWithdrawalDto.payDate = null;
+    }
+
     const w = this.withdrawalRepository.create({
       dateTime: createWithdrawalDto.dateTime,
       description: createWithdrawalDto.description,
@@ -68,5 +72,9 @@ export class WithdrawalService {
   async remove(id: number): Promise<void> {
     const w = await this.findOne(id);
     await this.withdrawalRepository.delete(w.id);
+  }
+
+  async findAllPending(): Promise<Withdrawal[]> {
+    return this.withdrawalRepository.find({ where: { state: 'Pendiente' }, relations: ['cashFlow'] });
   }
 }

@@ -54,22 +54,25 @@ export class LotService {
   async update(id: number, updateLotDto: UpdateLotDto): Promise<Lot> {
     await this.findOne(id);
 
-    if (updateLotDto.supplyTypeId) {
+    const { supplyTypeId, ...others } = updateLotDto;
+
+    if (supplyTypeId) {
       const supplyType = await this.supplyTypeRepository.findOne({
-        where: { id: updateLotDto.supplyTypeId },
+        where: { id: supplyTypeId },
       });
 
       if (!supplyType) {
-        throw new NotFoundException(`SupplyType with id ${updateLotDto.supplyTypeId} not found`);
+        throw new NotFoundException(`SupplyType with id ${supplyTypeId} not found`);
       }
 
-      await this.lotRepository.update(id, { ...updateLotDto, supplyType });
+      await this.lotRepository.update(id, { ...others, supplyType });
     } else {
-      await this.lotRepository.update(id, updateLotDto as any);
+      await this.lotRepository.update(id, others);
     }
 
     return this.findOne(id);
   }
+
 
   async remove(id: number): Promise<void> {
     const lot = await this.findOne(id);

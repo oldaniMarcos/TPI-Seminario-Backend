@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateWithdrawalDto {
   @IsString()
@@ -17,7 +17,8 @@ export class CreateWithdrawalDto {
   state: string;
 
   @IsString()
-  payDate: string;
+  @IsOptional()
+  payDate: string | "";
 
   @IsNumber()
   cashFlowId: number;
