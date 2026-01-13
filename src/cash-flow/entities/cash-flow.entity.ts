@@ -8,8 +8,8 @@ export class CashFlow {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('date')
-  closeDate: string;
+  @Column('date', {nullable: true})
+  closeDate: string | null;
 
   @Column('char')
   closeType: string;

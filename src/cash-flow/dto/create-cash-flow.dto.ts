@@ -1,11 +1,12 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateCashFlowDto {
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsOptional()
   @IsString()
   closeDate: string;
 
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @IsString()
   closeType: string;
 

@@ -18,6 +18,11 @@ export class CashFlowController {
     return this.cashFlowService.findAll();
   }
 
+  @Get('latest')
+  findLatest(): Promise<CashFlow> {
+    return this.cashFlowService.findLatest();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<CashFlow> {
     return this.cashFlowService.findOne(+id);

@@ -46,4 +46,16 @@ export class CashFlowService {
     const cashFlow = await this.findOne(id);
     await this.cashFlowRepository.delete(cashFlow.id);
   }
+
+  async findLatest(): Promise<CashFlow> {
+    const [cashFlow] = await this.cashFlowRepository.find({
+      order: { id: 'DESC' },
+      take: 1,
+    });
+
+    if (!cashFlow) {
+      throw new NotFoundException('No CashFlow records found');
+    }
+    return cashFlow;
+  }
 }
