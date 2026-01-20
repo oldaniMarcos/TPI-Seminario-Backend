@@ -23,6 +23,14 @@ export class CashFlowController {
     return this.cashFlowService.findLatest();
   }
 
+  @Get('date-range/:startDate/:endDate')
+  findByDateRange(
+    @Param('startDate') startDate: string,
+    @Param('endDate') endDate: string,
+  ): Promise<CashFlow[]> {
+    return this.cashFlowService.findByDateRange(startDate, endDate);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<CashFlow> {
     return this.cashFlowService.findOne(+id);

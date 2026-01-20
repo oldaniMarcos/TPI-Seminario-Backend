@@ -58,4 +58,13 @@ export class CashFlowService {
     }
     return cashFlow;
   }
+
+  async findByDateRange(startDate: string, endDate: string): Promise<CashFlow[]> {
+    return this.cashFlowRepository
+      .createQueryBuilder('cashFlow')
+      .where('cashFlow.closeDate BETWEEN :startDate AND :endDate', { startDate, endDate })
+      // .leftJoinAndSelect('cashFlow.withdrawals', 'withdrawals')
+      // .leftJoinAndSelect('cashFlow.visits', 'visits')
+      .getMany();
+  }
 }
