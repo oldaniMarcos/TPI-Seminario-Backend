@@ -3,6 +3,7 @@ import { VisitService } from './visit.service';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { Visit } from './entities/visit.entity';
+import { RegisterVisitDto } from './dto/register-visit.dto';
 
 @Controller('visit')
 export class VisitController {
@@ -11,6 +12,11 @@ export class VisitController {
   @Post()
   create(@Body() createVisitDto: CreateVisitDto): Promise<Visit> {
     return this.visitService.create(createVisitDto);
+  }
+
+  @Post('register')
+  registerVisit(@Body() registerVisitDto: RegisterVisitDto): Promise<void> {
+    return this.visitService.registerVisit(registerVisitDto);
   }
 
   @Get()

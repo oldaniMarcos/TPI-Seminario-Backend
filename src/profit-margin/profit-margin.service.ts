@@ -39,4 +39,17 @@ export class ProfitMarginService {
     const pm = await this.findOne(id);
     await this.profitMarginRepository.delete(pm.id);
   }
+
+  async findLatest(): Promise<ProfitMargin> {
+    const latest = await this.profitMarginRepository.find({
+      order: {
+        beginDate: 'DESC',
+      },
+      take: 1,
+    });
+    if (!latest) {
+      throw new NotFoundException('No profit margins found');
+    }
+    return latest[0];
+  }
 }

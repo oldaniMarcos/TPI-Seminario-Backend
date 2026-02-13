@@ -18,6 +18,11 @@ export class ProfitMarginController {
     return this.profitMarginService.findAll();
   }
 
+  @Get('/latest')
+  findLatest(): Promise<ProfitMargin> {
+    return this.profitMarginService.findLatest();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<ProfitMargin> {
     return this.profitMarginService.findOne(+id);

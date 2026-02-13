@@ -18,6 +18,11 @@ export class SupplyTypeController {
     return this.supplyTypeService.findAll();
   }
 
+  @Get('units')
+  findAllWithTotalUnits(): Promise<any> {
+    return this.supplyTypeService.findAllWithTotalUnits();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string): Promise<SupplyType> {
     return this.supplyTypeService.findOne(+id);

@@ -62,4 +62,42 @@ export class SupplyTypeService {
     const st = await this.findOne(id);
     await this.supplyTypeRepository.delete(st.id);
   }
+
+  async findAllWithTotalUnits(): Promise<any> {
+    const today = new Date().toISOString().split('T')[0];
+
+    const result = await this.supplyTypeRepository
+      .createQueryBuilder('supplyType')
+
+      .loadRelationCountAndMap(
+        'supplyType.lotsCount',
+        'supplyType.lots'
+      )
+
+      .leftJoinAndSelect(
+        'supplyType.lots',
+        'lots',
+        'lots.dueDate >= :today',
+        { today }
+      )
+
+      .addSelect(subQuery => {
+        return subQuery
+          .select('sp.price')
+          .from('supply_price', 'sp')
+          .where('sp.supplyTypeId = supplyType.id')
+          .orderBy('sp.beginDate', 'DESC')
+          .limit(1);
+      }, 'supplyType_currentPrice')
+
+      .getRawAndEntities();
+
+    const supplyTypes = result.entities.map((st, index) => ({
+      ...st,
+      currentPrice: Number(result.raw[index].supplyType_currentPrice),
+      totalUnits: (st.lots || []).reduce((sum, lot) => sum + (lot.units || 0), 0),
+    }));
+
+    return supplyTypes;
+  }
 }

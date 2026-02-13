@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { Visit } from './entities/visit.entity';
@@ -8,6 +8,9 @@ import { Pet } from '../pet/entities/pet.entity';
 import { Veterinary } from '../veterinary/entities/veterinary.entity';
 import { CashFlow } from '../cash-flow/entities/cash-flow.entity';
 import { SupplyType } from '../supply-type/entities/supply-type.entity';
+import { RegisterVisitDto } from './dto/register-visit.dto';
+import { Lot } from '../lot/entities/lot.entity';
+import { Installment } from '../installment/entities/installment.entity';
 
 @Injectable()
 export class VisitService {
@@ -107,5 +110,129 @@ export class VisitService {
   async remove(id: number): Promise<void> {
     const visit = await this.findOne(id);
     await this.visitRepository.delete(visit.id);
+  }
+
+  async registerVisit(registerVisitDto: RegisterVisitDto): Promise<void> {
+    console.log(registerVisitDto);
+
+    const queryRunner = this.visitRepository.manager.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const {
+        petId,
+        vetId,
+        diagnostic,
+        supplies,
+        // visitValue, // unused
+        payInInstallments,
+        total,
+        dueDate
+      } = registerVisitDto;
+
+      const manager = queryRunner.manager;
+
+      // fetch the latest cash register
+      const [cashFlow] = await this.cashFlowRepository.find({
+        order: { id: 'DESC' },
+        take: 1,
+      })
+
+      if (!cashFlow) {
+        throw new Error('No CashFlow records found');
+      }
+
+      // create the visit
+      const visit = manager.create(Visit, {
+        dateTime: new Date().toISOString(),
+        diagnostic,
+        amount: total,
+        pet: { id: petId },
+        veterinary: { id: vetId },
+        cashFlow: { id: cashFlow.id },
+        supplyTypes: supplies.map(s => ({ id: s.supplyTypeId })),
+      });
+      await manager.save(visit);
+
+      // add inflows to cash register
+      cashFlow.inflows = Number(cashFlow.inflows || 0) + Number(total);
+      await manager.save(cashFlow);
+
+      // update supply stock
+      for (const s of supplies) {
+        let remaining = s.quantity;
+
+        const lots = await manager.find(Lot, {
+          where: {
+            supplyType: { id: s.supplyTypeId },
+            units: MoreThan(0),
+          },
+          order: { 
+            dueDate: 'ASC' 
+          },
+          lock: { mode: 'pessimistic_write' },
+        });
+
+        if (!lots.length) {
+          throw new Error(`No stock available for supply type ${s.supplyTypeId}`);
+        }
+
+        for (const lot of lots) {
+          if (remaining <= 0) break;
+
+          const available = lot.units;
+
+          if (available >= remaining) {
+            lot.units = available - remaining;
+            remaining = 0;
+            await manager.save(lot);
+            break;
+          } else {
+            remaining -= available;
+            lot.units = 0;
+            await manager.save(lot);
+          }
+        }
+
+        if (remaining > 0) {
+          throw new Error(`Not enough stock for supply type ${s.supplyTypeId}. Remaining quantity: ${remaining}`);
+        }
+      }
+
+      // create installments if needed
+      if (payInInstallments) {
+        const installmentValue = Number(total) / 3;
+
+        let currentDue = new Date(dueDate);
+
+        for (let i = 0; i < 3; i++) {
+          const installment = manager.create(Installment, {
+            visit: { id: visit.id },
+            amount: installmentValue,
+            dueDate: new Date(currentDue).toISOString().split('T')[0],
+          });
+
+          await manager.save(installment)
+
+          currentDue = new Date(currentDue);
+          currentDue.setMonth(currentDue.getMonth() + 1);
+        }
+      }
+
+      // commit
+      await queryRunner.commitTransaction();
+
+    } catch (error) {
+
+      await queryRunner.rollbackTransaction();
+      throw error;
+
+    } finally {
+
+      await queryRunner.release();
+
+    }
   }
 }
