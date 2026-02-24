@@ -173,14 +173,12 @@ export class ClientService {
 
   async findByDoc(docType: string, docNum: string): Promise<any | null> {
 
-    // 1) Buscar cliente primero
     const client = await this.clientRepository.findOne({
       where: { docType, docNum },
     });
 
-    if (!client) return null;  // ← Cliente inexistente
+    if (!client) return null;
 
-    // 2) Buscar cuotas del cliente
     const rows = await this.clientRepository
       .createQueryBuilder('client')
       .leftJoin('client.pets', 'pet')
@@ -203,7 +201,6 @@ export class ClientService {
       .andWhere('installment.payDate IS NULL')     // cuotas impagas
       .getRawMany();
 
-    // 3) Si no tiene cuotas impagas → devolver installments = null
     if (rows.length === 0) {
       return {
         id: client.id,
@@ -216,7 +213,6 @@ export class ClientService {
       };
     }
 
-    // 4) Agrupar cuotas
     const result = {
       id: rows[0].clientId,
       fullName: rows[0].fullName,
